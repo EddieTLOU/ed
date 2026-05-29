@@ -1,79 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ED Studio Pro | Clean Build</title>
+    <title>ED Studio Pro | Image Update</title>
     <style>
-        :root { --glass-bg: rgba(255, 255, 255, 0.05); --red: #ff0000; }
-        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .glass { background: var(--glass-bg); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        :root { 
+            --glass-bg: rgba(255, 255, 255, 0.05); 
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        body { 
+            margin: 0; background: #000; color: #fff; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+            height: 100vh; overflow: hidden; 
+        }
         
-        header { padding: 20px; }
-        .page { padding: 20px; height: 80vh; }
+        #ide-view {
+            padding: 30px; height: 100vh; box-sizing: border-box;
+            max-width: 1200px; margin: 0 auto; display: block;
+        }
         
-        #editor { width: 100%; height: 45vh; background: transparent; border: none; color: #ff5555; padding: 20px; font-family: monospace; font-size: 18px; outline: none; }
-        #preview { width: 100%; height: 25vh; overflow-y: auto; padding: 20px; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; position: relative; }
+        #runtime-view {
+            display: none; height: 100vh; width: 100vw; 
+            position: absolute; top: 0; left: 0; 
+        }
+
+        .page { 
+            display: none; height: 100vh; width: 100vw; 
+            position: absolute; top: 0; left: 0; 
+        }
+        .active-page { display: block; }
         
-        .glass-btn { padding: 12px 24px; border-radius: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1); color: white; cursor: pointer; }
+        .glass { 
+            background: var(--glass-bg); backdrop-filter: blur(40px); 
+            border: 1px solid var(--glass-border); 
+        }
+        
+        #editor { 
+            width: 100%; height: 60vh; background: rgba(0, 0, 0, 0.3); 
+            color: #ff5555; padding: 20px; font-family: monospace; 
+            font-size: 16px; border-radius: 24px; border: 1px solid #333;
+            outline: none; resize: none; box-sizing: border-box; white-space: pre;
+        }
+        
+        .btn-panel { display: flex; gap: 15px; margin-top: 20px; }
+        
+        .glass-btn { 
+            padding: 15px 30px; border-radius: 16px; 
+            background: rgba(255,255,255,0.05); color: white; cursor: pointer; 
+            border: 1px solid var(--glass-border); font-size: 14px;
+            font-weight: 600; letter-spacing: 1px; transition: all 0.3s ease;
+        }
+        .glass-btn:hover { background: rgba(255,255,255,0.15); }
+
+        #exit-btn {
+            position: absolute; top: 20px; right: 20px;
+            padding: 12px 24px; background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.5); color: white;
+            border-radius: 12px; cursor: pointer; backdrop-filter: blur(10px);
+            font-weight: bold; z-index: 9999; transition: 0.3s;
+        }
+        #exit-btn:hover { background: rgba(255, 0, 0, 0.5); }
     </style>
 </head>
 <body>
 
-<header class="glass" style="margin:20px;">
-    <h1>ED STUDIO PRO</h1>
-</header>
-
-<div id="editor-page" class="page">
-    <textarea id="editor" class="glass" placeholder="gradient up red black blue&#10;txt Welcome to ED c:white p:middle s:40"></textarea>
-    <div style="margin-top:20px; display:flex; gap:10px;">
-        <button class="glass-btn" onclick="runProject()">RUN PROJECT</button>
-        <button class="glass-btn" onclick="document.getElementById('preview').requestFullscreen()">FULLSCREEN</button>
+<div id="ide-view">
+    <h1 style="font-weight: 300; letter-spacing: 2px;">ED STUDIO PRO</h1>
+    <textarea id="editor" class="glass">EXAMPLE   gradient red purple
+    txt Hi c:black p:middle s:50</textarea>
+    
+    <div class="btn-panel">
+        <button class="glass-btn" onclick="startProject(false)">RUN PROJECT</button>
+        <button class="glass-btn" onclick="startProject(true)">FULLSCREEN</button>
         <button class="glass-btn" onclick="saveFile()">SAVE .ED</button>
     </div>
-    <div id="preview" class="glass" style="margin-top:20px;"></div>
+</div>
+
+<div id="runtime-view">
+    <button id="exit-btn" onclick="exitProject()">BACK</button>
+    <div id="page-container"></div>
 </div>
 
 <script>
-    const ED_ENGINE = {
-        gradient: (p) => {
-            const parts = p.split(' ');
-            const dirMap = { 'up': 'to top', 'down': 'to bottom', 'left': 'to left', 'right': 'to right' };
-            document.getElementById('preview').style.background = `linear-gradient(${dirMap[parts[0]] || 'to bottom'}, ${parts.slice(1).join(', ')})`;
-        },
-        txt: (p) => {
-            const parts = p.split(' ');
-            let message = [], color = "white", pos = "absolute", size = "24";
-            const posMap = { 
-                'top-left': 'top:10px; left:10px;', 
-                'middle': 'top:50%; left:50%; transform:translate(-50%,-50%);', 
-                'bottom-right': 'bottom:10px; right:10px;' 
-            };
-            parts.forEach(part => {
-                if(part.startsWith('c:')) color = part.split(':')[1];
-                else if(part.startsWith('p:')) pos = posMap[part.split(':')[1]] || '';
-                else if(part.startsWith('s:')) size = part.split(':')[1];
-                else message.push(part);
-            });
+    let targetPageId = 'app-root';
+
+    function ensurePageExists(id) {
+        if (!document.getElementById(id)) {
             const div = document.createElement('div');
-            div.style.cssText = `position: absolute; color: ${color}; ${pos}; font-size: ${size}px;`;
-            div.innerText = message.join(' ');
-            document.getElementById('preview').appendChild(div);
+            div.id = id;
+            div.className = 'page';
+            div.style.background = '#000'; 
+            
+            if (id !== 'app-root') {
+                const inAppBackBtn = document.createElement('button');
+                inAppBackBtn.innerText = "BACK";
+                inAppBackBtn.style.cssText = "position:absolute; top:30px; left:30px; padding:12px 24px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; border-radius:12px; cursor:pointer; backdrop-filter:blur(10px); font-family:sans-serif; font-weight:bold; z-index:99;";
+                inAppBackBtn.onclick = () => {
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+                    document.getElementById('app-root').classList.add('active-page');
+                };
+                div.appendChild(inAppBackBtn);
+            }
+            document.getElementById('page-container').appendChild(div);
+        }
+    }
+
+    const ED_ENGINE = {
+        'use': (args) => {
+            const parts = args.split(' ');
+            if (parts[0] === 'page') {
+                ensurePageExists(parts[1]);
+                targetPageId = parts[1];
+            }
+        },
+        'new': (args) => {
+            const parts = args.split(' ');
+            if (parts[0] === 'page') {
+                ensurePageExists(parts[1]);
+                targetPageId = parts[1];
+            }
+        },
+        'gradient': (args) => {
+            const parts = args.split(' ');
+            const dirMap = { 'up': 'to top', 'down': 'to bottom', 'left': 'to left', 'right': 'to right' };
+            const grad = `linear-gradient(${dirMap[parts[0]] || 'to bottom'}, ${parts.slice(1).join(', ')})`;
+            
+            ensurePageExists(targetPageId);
+            const target = document.getElementById(targetPageId);
+            if(target) target.style.background = grad;
+        },
+        'add': (args) => {
+            const parts = args.split(' ');
+            const type = parts[0]; 
+            
+            ensurePageExists(targetPageId);
+            const targetEl = document.getElementById(targetPageId);
+            if (!targetEl) return;
+
+            let content = [], color = "white", pos = "absolute", target = "", size = "24";
+            const posMap = { 
+                'middle': 'top:50%; left:50%; transform:translate(-50%,-50%);',
+                'top-left': 'top:30px; left:30px;', 'top-right': 'top:30px; right:30px;',
+                'bottom-left': 'bottom:30px; left:30px;', 'bottom-right': 'bottom:30px; right:30px;'
+            };
+            
+            let startIndex = 1;
+            let imgUrl = "";
+
+            if (type === 'button' && parts[1] === 'txt') startIndex = 2;
+            
+            // Image URL mapping
+            if (type === 'img') {
+                imgUrl = parts[1];
+                startIndex = 2;
+                size = "200"; // Default to 200px wide if they forget the s: tag
+            }
+
+            for (let i = startIndex; i < parts.length; i++) {
+                const p = parts[i];
+                if (p.startsWith('c:')) { color = p.split(':')[1]; }
+                else if (p.startsWith('p:')) { pos = posMap[p.split(':')[1]] || ''; }
+                else if (p.startsWith('id:')) { target = p.split(':')[1]; }
+                else if (p.startsWith('s:')) { size = p.split(':')[1]; }
+                else { content.push(p); } 
+            }
+
+            if (type === 'button') {
+                const btn = document.createElement('button');
+                btn.innerText = content.join(' ');
+                btn.style.cssText = `position: absolute; ${pos} padding: 18px 36px; background: ${color}; color: white; border-radius: 16px; border:1px solid rgba(255,255,255,0.2); cursor:pointer; font-size:${size}px; font-weight:600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index:10;`;
+                btn.onclick = () => {
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+                    ensurePageExists(target); 
+                    const targetPage = document.getElementById(target);
+                    if(targetPage) targetPage.classList.add('active-page');
+                };
+                targetEl.appendChild(btn);
+            } 
+            else if (type === 'txt') {
+                const div = document.createElement('div');
+                div.style.cssText = `position: absolute; ${pos} color: ${color}; font-size: ${size}px; font-weight: 500; text-shadow: 0 2px 10px rgba(0,0,0,0.5); white-space: nowrap; z-index:10;`;
+                div.innerText = content.join(' ');
+                targetEl.appendChild(div);
+            }
+            else if (type === 'img') {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                // Applies width based on the s: tag. Height is automatic.
+                img.style.cssText = `position: absolute; ${pos} width: ${size}px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index:5;`;
+                targetEl.appendChild(img);
+            }
+        },
+        'txt': (args) => {
+            ED_ENGINE['add'](`txt ${args}`);
         }
     };
 
-    function runProject() {
-        document.getElementById('preview').innerHTML = "";
+    function startProject(goFullscreen) {
+        document.getElementById('ide-view').style.display = 'none';
+        document.getElementById('runtime-view').style.display = 'block';
+
+        const container = document.getElementById('page-container');
+        container.innerHTML = "";
+        
+        targetPageId = 'app-root';
+        ensurePageExists('app-root');
+        document.getElementById('app-root').classList.add('active-page');
+
         document.getElementById('editor').value.split('\n').forEach(line => {
-            const spaceIdx = line.indexOf(' ');
-            if (spaceIdx > -1) {
-                const cmd = line.substring(0, spaceIdx);
-                const args = line.substring(spaceIdx + 1);
-                if(ED_ENGINE[cmd]) ED_ENGINE[cmd](args);
-            }
+            const trimmed = line.trim();
+            if(!trimmed) return;
+            const spaceIdx = trimmed.indexOf(' ');
+            if(spaceIdx === -1) return;
+            
+            const cmd = trimmed.substring(0, spaceIdx);
+            const args = trimmed.substring(spaceIdx + 1);
+            if(ED_ENGINE[cmd]) ED_ENGINE[cmd](args);
         });
+
+        if(goFullscreen) {
+            document.documentElement.requestFullscreen().catch(err => console.log(err));
+        }
+    }
+
+    function exitProject() {
+        if (document.fullscreenElement) document.exitFullscreen();
+        document.getElementById('runtime-view').style.display = 'none';
+        document.getElementById('ide-view').style.display = 'block';
     }
 
     function saveFile() {
-        const blob = new Blob([document.getElementById('editor').value], {type: "text/plain"});
+        const text = document.getElementById('editor').value;
+        const blob = new Blob([text], {type: "text/plain"});
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = "project.ed";
