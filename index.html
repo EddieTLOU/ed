@@ -80,7 +80,7 @@
 
 <div id="ide-view">
     <div class="header-container">
-        <h1>ED STUDIO PRO</h1>
+        <h1>GLIPHY</h1>
     </div>
     
     <div id="ide-layout">
@@ -120,21 +120,12 @@
         </div>
 
         <div id="editor-wrapper" class="glass">
-            <textarea id="editor" spellcheck="false">new page main
-gradient up #1a1a2e #16213e
-add txt Massive Font Update! c:#ff5555 p:top-left s:40 f:bebas
-add txt Pick any style from the cheat sheet. c:white p:middle s:30 f:dance
-add button txt TRY A NEW FONT c:black p:bottom-right id:67 f:pacifico
-
-new page 67
-gradient up #3a1c71 #d76d77 #ffaf7b
-add txt It Works Perfectly! c:white p:middle s:50 f:amatic
-add button txt GO BACK c:black p:top-left id:main f:vt323</textarea>
+            <textarea id="editor" spellcheck="false"></textarea>
             
             <div class="btn-panel">
                 <button class="glass-btn primary" onclick="startProject(false)">▶ RUN PROJECT</button>
                 <button class="glass-btn" onclick="startProject(true)">⛶ FULLSCREEN</button>
-                <button class="glass-btn" onclick="saveFile()">↓ EXPORT .ED</button>
+                <button class="glass-btn" onclick="saveFile()">↓ EXPORT .GLIPHY</button>
             </div>
         </div>
     </div>
@@ -280,7 +271,7 @@ add button txt GO BACK c:black p:top-left id:main f:vt323</textarea>
 
     function saveFile() {
         const text = document.getElementById('editor').value; const blob = new Blob([text], {type: "text/plain"});
-        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "project.ed"; a.click();
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "CODE.GLIPHY"; a.click();
     }
 </script>
 </body>
