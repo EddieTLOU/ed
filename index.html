@@ -1,113 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>ED Studio Pro | Image Button Update</title>
+    <title>ED Studio Pro | Clean UI + Fonts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Bangers&family=Bebas+Neue&family=Caveat:wght@700&family=Courier+Prime:wght@700&family=Dancing+Script:wght@700&family=Fredoka+One&family=Lato:wght@700&family=Lora:ital,wght@1,700&family=Merriweather:ital,wght@1,700&family=Montserrat:wght@700&family=Open+Sans:wght@700&family=Orbitron:wght@700&family=Oswald:wght@700&family=PT+Serif:ital,wght@1,700&family=Pacifico&family=Permanent+Marker&family=Playfair+Display:ital,wght@1,700&family=Press+Start+2P&family=Raleway:wght@700&family=Righteous&family=Roboto+Slab:wght@700&family=Roboto:wght@700&family=Satisfy&family=VT323&display=swap" rel="stylesheet">
+    
     <style>
         :root { 
-            --glass-bg: rgba(255, 255, 255, 0.05); 
+            --glass-bg: rgba(20, 20, 35, 0.4); 
             --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-accent: #ff5555;
+            --neon-glow: rgba(255, 85, 85, 0.4);
         }
+        
+        @keyframes bg-pan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
         body { 
-            margin: 0; background: #000; color: #fff; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; 
+            margin: 0; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
             height: 100vh; overflow: hidden; 
-        }
-        
-        #ide-view {
-            padding: 30px; height: 100vh; box-sizing: border-box;
-            max-width: 1200px; margin: 0 auto; display: block;
-        }
-        
-        #runtime-view {
-            display: none; height: 100vh; width: 100vw; 
-            position: absolute; top: 0; left: 0; 
+            background: linear-gradient(-45deg, #09090e, #1a1a2e, #16213e, #0f0c29);
+            background-size: 400% 400%; animation: bg-pan 20s ease infinite;
         }
 
-        .page { 
-            display: none; height: 100vh; width: 100vw; 
-            position: absolute; top: 0; left: 0; 
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px; z-index: -1; pointer-events: none;
         }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--neon-accent); }
+
+        #ide-view {
+            padding: 40px 30px; height: 100vh; box-sizing: border-box;
+            max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column;
+        }
+
+        .header-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
+        h1 { font-weight: 800; letter-spacing: 3px; margin: 0; font-size: 32px; background: linear-gradient(to right, #ffffff, var(--neon-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 20px var(--neon-glow); }
+
+        #ide-layout { display: flex; gap: 30px; flex-grow: 1; min-height: 0; }
+
+        .glass { background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 15px 35px rgba(0,0,0,0.5); border-radius: 20px; position: relative; }
+
+        /* Font Sidebar Tutorial */
+        #font-sidebar { width: 320px; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar-title { font-size: 20px; color: #fff; letter-spacing: 2px; font-weight: bold; margin-bottom: 5px; text-align: center; }
+        .sidebar-subtitle { font-size: 12px; color: #aaa; text-align: center; margin-bottom: 15px; }
+        
+        .font-category { font-size: 13px; color: var(--neon-accent); border-bottom: 1px solid rgba(255,85,85,0.3); padding-bottom: 5px; margin: 15px 0 5px 0; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+        
+        .font-card { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s ease; }
+        .font-card:hover { border-color: rgba(255,255,255,0.2); transform: translateX(5px); }
+        .font-card h3 { margin: 0; font-size: 18px; font-weight: normal; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .font-card code { color: var(--neon-accent); font-family: monospace; font-size: 12px; background: rgba(255, 85, 85, 0.1); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,85,85,0.2); }
+
+        #editor-wrapper { flex-grow: 1; display: flex; flex-direction: column; padding: 30px 20px 20px 20px; }
+        #editor { width: 100%; height: 100%; background: transparent; color: #e2e8f0; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 16px; border: none; line-height: 1.6; outline: none; resize: none; box-sizing: border-box; white-space: pre; }
+        #editor:focus { color: #fff; }
+        
+        .btn-panel { display: flex; gap: 15px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+        .glass-btn { padding: 15px 30px; border-radius: 12px; background: rgba(255,255,255,0.05); color: white; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; font-weight: 600; letter-spacing: 1.5px; transition: all 0.3s ease; }
+        .glass-btn.primary { background: rgba(255, 85, 85, 0.1); border-color: rgba(255, 85, 85, 0.3); }
+        .glass-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .glass-btn.primary:hover { background: rgba(255, 85, 85, 0.2); border-color: var(--neon-accent); box-shadow: 0 10px 20px var(--neon-glow); }
+
+        #runtime-view { display: none; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; z-index: 99999; }
+        .page { display: none; height: 100vh; width: 100vw; position: absolute; top: 0; left: 0; }
         .active-page { display: block; }
         
-        .glass { 
-            background: var(--glass-bg); backdrop-filter: blur(40px); 
-            border: 1px solid var(--glass-border); 
-        }
-        
-        #editor { 
-            width: 100%; height: 60vh; background: rgba(0, 0, 0, 0.3); 
-            color: #ff5555; padding: 20px; font-family: monospace; 
-            font-size: 16px; border-radius: 24px; border: 1px solid #333;
-            outline: none; resize: none; box-sizing: border-box; white-space: pre;
-        }
-        
-        .btn-panel { display: flex; gap: 15px; margin-top: 20px; }
-        
-        .glass-btn { 
-            padding: 15px 30px; border-radius: 16px; 
-            background: rgba(255,255,255,0.05); color: white; cursor: pointer; 
-            border: 1px solid var(--glass-border); font-size: 14px;
-            font-weight: 600; letter-spacing: 1px; transition: all 0.3s ease;
-        }
-        .glass-btn:hover { background: rgba(255,255,255,0.15); }
-
-        #exit-btn {
-            position: absolute; top: 20px; right: 20px;
-            padding: 12px 24px; background: rgba(255, 0, 0, 0.2);
-            border: 1px solid rgba(255, 0, 0, 0.5); color: white;
-            border-radius: 12px; cursor: pointer; backdrop-filter: blur(10px);
-            font-weight: bold; z-index: 9999; transition: 0.3s;
-        }
-        #exit-btn:hover { background: rgba(255, 0, 0, 0.5); }
+        #exit-btn { position: absolute; top: 20px; right: 20px; padding: 12px 24px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(255, 255, 255, 0.3); color: white; border-radius: 12px; cursor: pointer; backdrop-filter: blur(10px); font-weight: bold; letter-spacing: 1px; z-index: 9999; transition: 0.3s; }
+        #exit-btn:hover { background: #ff5555; border-color: #ff5555; }
     </style>
 </head>
 <body>
 
-<div id="ide-view">
-    <h1 style="font-weight: 300; letter-spacing: 2px;">ED STUDIO PRO</h1>
-    <textarea id="editor" class="glass">gradient up #1a1a2e #16213e
-add txt Click The Image! c:white p:top-left s:40
+<div class="bg-grid"></div>
 
-add img button https://picsum.photos/300 p:middle s:300 id:67
+<div id="ide-view">
+    <div class="header-container">
+        <h1>ED STUDIO PRO</h1>
+    </div>
+    
+    <div id="ide-layout">
+        <div id="font-sidebar" class="glass">
+            <div class="sidebar-title">TYPOGRAPHY</div>
+            <div class="sidebar-subtitle">Add <code>f:name</code> to any text or button</div>
+
+            <div class="font-category">Retro & Tech</div>
+            <div class="font-card"><h3 style="font-family: 'Press Start 2P', cursive; font-size:10px; line-height: 2;">8-Bit Pixel</h3><code>f:pixel</code></div>
+            <div class="font-card"><h3 style="font-family: 'Orbitron', sans-serif;">Cyber Tech</h3><code>f:tech</code></div>
+            <div class="font-card"><h3 style="font-family: 'VT323', monospace; font-size:22px;">Terminal Term</h3><code>f:vt323</code></div>
+            <div class="font-card"><h3 style="font-family: 'Courier Prime', monospace;">Typewriter</h3><code>f:courier</code></div>
+
+            <div class="font-category">Display & Bold</div>
+            <div class="font-card"><h3 style="font-family: 'Bangers', cursive; letter-spacing: 2px;">Comic Bold</h3><code>f:bold</code></div>
+            <div class="font-card"><h3 style="font-family: 'Bebas Neue', sans-serif; font-size:22px; letter-spacing: 1px;">Movie Poster</h3><code>f:bebas</code></div>
+            <div class="font-card"><h3 style="font-family: 'Righteous', cursive;">Smooth Retro</h3><code>f:right</code></div>
+            <div class="font-card"><h3 style="font-family: 'Amatic SC', cursive; font-size:24px;">Skinny Marker</h3><code>f:amatic</code></div>
+
+            <div class="font-category">Handwriting</div>
+            <div class="font-card"><h3 style="font-family: 'Permanent Marker', cursive;">Messy Dog</h3><code>f:messy</code></div>
+            <div class="font-card"><h3 style="font-family: 'Pacifico', cursive;">Beach Vibes</h3><code>f:pacifico</code></div>
+            <div class="font-card"><h3 style="font-family: 'Dancing Script', cursive; font-size:22px;">School Cursive</h3><code>f:dance</code></div>
+            <div class="font-card"><h3 style="font-family: 'Caveat', cursive; font-size:22px;">Quick Notes</h3><code>f:caveat</code></div>
+
+            <div class="font-category">Clean & Modern (Sans)</div>
+            <div class="font-card"><h3 style="font-family: 'Roboto', sans-serif;">App Default</h3><code>f:roboto</code></div>
+            <div class="font-card"><h3 style="font-family: 'Montserrat', sans-serif;">Sharp Bold</h3><code>f:mont</code></div>
+            <div class="font-card"><h3 style="font-family: 'Oswald', sans-serif;">Tall Clean</h3><code>f:oswald</code></div>
+            <div class="font-card"><h3 style="font-family: 'Raleway', sans-serif;">Thin Elegant</h3><code>f:raleway</code></div>
+
+            <div class="font-category">Elegant & Classic (Serif)</div>
+            <div class="font-card"><h3 style="font-family: 'Playfair Display', serif; font-style: italic;">Fancy Title</h3><code>f:fancy</code></div>
+            <div class="font-card"><h3 style="font-family: 'Merriweather', serif;">Book Text</h3><code>f:merri</code></div>
+            <div class="font-card"><h3 style="font-family: 'Roboto Slab', serif;">Chunky News</h3><code>f:slab</code></div>
+            <div class="font-card"><h3 style="font-family: 'Lora', serif; font-style: italic;">Poetry Style</h3><code>f:lora</code></div>
+        </div>
+
+        <div id="editor-wrapper" class="glass">
+            <textarea id="editor" spellcheck="false">new page main
+gradient up #1a1a2e #16213e
+add txt Massive Font Update! c:#ff5555 p:top-left s:40 f:bebas
+add txt Pick any style from the cheat sheet. c:white p:middle s:30 f:dance
+add button txt TRY A NEW FONT c:black p:bottom-right id:67 f:pacifico
 
 new page 67
 gradient up #3a1c71 #d76d77 #ffaf7b
-add txt You Clicked It! c:white p:middle s:50</textarea>
-    
-    <div class="btn-panel">
-        <button class="glass-btn" onclick="startProject(false)">RUN PROJECT</button>
-        <button class="glass-btn" onclick="startProject(true)">FULLSCREEN</button>
-        <button class="glass-btn" onclick="saveFile()">SAVE .ED</button>
+add txt It Works Perfectly! c:white p:middle s:50 f:amatic
+add button txt GO BACK c:black p:top-left id:main f:vt323</textarea>
+            
+            <div class="btn-panel">
+                <button class="glass-btn primary" onclick="startProject(false)">▶ RUN PROJECT</button>
+                <button class="glass-btn" onclick="startProject(true)">⛶ FULLSCREEN</button>
+                <button class="glass-btn" onclick="saveFile()">↓ EXPORT .ED</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <div id="runtime-view">
-    <button id="exit-btn" onclick="exitProject()">BACK</button>
+    <button id="exit-btn" onclick="exitProject()">✕ EXIT</button>
     <div id="page-container"></div>
 </div>
 
 <script>
-    let targetPageId = 'app-root';
+    let targetPageId = null;
+    let firstPageId = null;
+
+    // THE MASSIVE 25-FONT MAP
+    const FONT_MAP = {
+        'default': "-apple-system, BlinkMacSystemFont, sans-serif",
+        // Retro & Tech
+        'pixel': "'Press Start 2P', cursive", 'tech': "'Orbitron', sans-serif",
+        'vt323': "'VT323', monospace", 'courier': "'Courier Prime', monospace",
+        // Display & Bold
+        'bold': "'Bangers', cursive", 'bebas': "'Bebas Neue', sans-serif",
+        'right': "'Righteous', cursive", 'amatic': "'Amatic SC', cursive", 'fredoka': "'Fredoka One', cursive",
+        // Handwriting
+        'messy': "'Permanent Marker', cursive", 'pacifico': "'Pacifico', cursive",
+        'dance': "'Dancing Script', cursive", 'caveat': "'Caveat', cursive", 'satisfy': "'Satisfy', cursive",
+        // Clean & Modern (Sans)
+        'roboto': "'Roboto', sans-serif", 'mont': "'Montserrat', sans-serif",
+        'oswald': "'Oswald', sans-serif", 'raleway': "'Raleway', sans-serif",
+        'open': "'Open Sans', sans-serif", 'lato': "'Lato', sans-serif",
+        // Elegant & Classic (Serif)
+        'fancy': "'Playfair Display', serif", 'merri': "'Merriweather', serif",
+        'slab': "'Roboto Slab', serif", 'lora': "'Lora', serif", 'pt': "'PT Serif', serif"
+    };
 
     function ensurePageExists(id) {
         if (!document.getElementById(id)) {
             const div = document.createElement('div');
-            div.id = id;
-            div.className = 'page';
-            div.style.background = '#000'; 
-            
-            if (id !== 'app-root') {
-                const inAppBackBtn = document.createElement('button');
-                inAppBackBtn.innerText = "BACK";
-                inAppBackBtn.style.cssText = "position:absolute; top:30px; left:30px; padding:12px 24px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:white; border-radius:12px; cursor:pointer; backdrop-filter:blur(10px); font-family:sans-serif; font-weight:bold; z-index:99; transition: transform 0.2s;";
-                inAppBackBtn.onmouseover = () => inAppBackBtn.style.transform = 'scale(1.05)';
-                inAppBackBtn.onmouseout = () => inAppBackBtn.style.transform = 'scale(1)';
-                inAppBackBtn.onclick = () => {
-                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-                    document.getElementById('app-root').classList.add('active-page');
-                };
-                div.appendChild(inAppBackBtn);
-            }
+            div.id = id; div.className = 'page'; div.style.background = '#000'; 
             document.getElementById('page-container').appendChild(div);
         }
     }
@@ -115,28 +181,23 @@ add txt You Clicked It! c:white p:middle s:50</textarea>
     const ED_ENGINE = {
         'use': (args) => {
             const parts = args.split(' ');
-            if (parts[0] === 'page') {
-                ensurePageExists(parts[1]);
-                targetPageId = parts[1];
-            }
+            if (parts[0] === 'page') { if (!firstPageId) firstPageId = parts[1]; ensurePageExists(parts[1]); targetPageId = parts[1]; }
         },
         'new': (args) => {
             const parts = args.split(' ');
-            if (parts[0] === 'page') {
-                ensurePageExists(parts[1]);
-                targetPageId = parts[1];
-            }
+            if (parts[0] === 'page') { if (!firstPageId) firstPageId = parts[1]; ensurePageExists(parts[1]); targetPageId = parts[1]; }
         },
         'gradient': (args) => {
+            if (!targetPageId) return; 
             const parts = args.split(' ');
             const dirMap = { 'up': 'to top', 'down': 'to bottom', 'left': 'to left', 'right': 'to right' };
             const grad = `linear-gradient(${dirMap[parts[0]] || 'to bottom'}, ${parts.slice(1).join(', ')})`;
-            
             ensurePageExists(targetPageId);
             const target = document.getElementById(targetPageId);
             if(target) target.style.background = grad;
         },
         'add': (args) => {
+            if (!targetPageId) return; 
             const parts = args.split(' ');
             let commandType = parts[0]; 
             
@@ -144,30 +205,18 @@ add txt You Clicked It! c:white p:middle s:50</textarea>
             const targetEl = document.getElementById(targetPageId);
             if (!targetEl) return;
 
-            let content = [], color = "white", pos = "absolute", target = "", size = "24";
+            let content = [], color = "white", pos = "absolute", target = "", size = "24", font = "default";
             const posMap = { 
                 'middle': 'top:50%; left:50%; transform:translate(-50%,-50%);',
                 'top-left': 'top:30px; left:30px;', 'top-right': 'top:30px; right:30px;',
                 'bottom-left': 'bottom:30px; left:30px;', 'bottom-right': 'bottom:30px; right:30px;'
             };
             
-            let startIndex = 1;
-            let imgUrl = "";
+            let startIndex = 1; let imgUrl = "";
 
-            // Smart Sub-Type Parsing
-            if (commandType === 'button' && parts[1] === 'txt') {
-                commandType = 'button-txt';
-                startIndex = 2;
-            } else if (commandType === 'img' && parts[1] === 'button') {
-                commandType = 'img-button';
-                imgUrl = parts[2];
-                startIndex = 3;
-                size = "150"; // default size for image buttons
-            } else if (commandType === 'img') {
-                imgUrl = parts[1];
-                startIndex = 2;
-                size = "200"; 
-            }
+            if (commandType === 'button' && parts[1] === 'txt') { commandType = 'button-txt'; startIndex = 2; } 
+            else if (commandType === 'img' && parts[1] === 'button') { commandType = 'img-button'; imgUrl = parts[2]; startIndex = 3; size = "150"; } 
+            else if (commandType === 'img') { imgUrl = parts[1]; startIndex = 2; size = "200"; }
 
             for (let i = startIndex; i < parts.length; i++) {
                 const p = parts[i];
@@ -175,96 +224,63 @@ add txt You Clicked It! c:white p:middle s:50</textarea>
                 else if (p.startsWith('p:')) { pos = posMap[p.split(':')[1]] || ''; }
                 else if (p.startsWith('id:')) { target = p.split(':')[1]; }
                 else if (p.startsWith('s:')) { size = p.split(':')[1]; }
+                else if (p.startsWith('f:')) { font = p.split(':')[1]; } 
                 else { content.push(p); } 
             }
 
+            const chosenFont = FONT_MAP[font] || FONT_MAP['default'];
+
             if (commandType === 'button-txt') {
-                const btn = document.createElement('button');
-                btn.innerText = content.join(' ');
-                btn.style.cssText = `position: absolute; ${pos} padding: 18px 36px; background: ${color}; color: white; border-radius: 16px; border:1px solid rgba(255,255,255,0.2); cursor:pointer; font-size:${size}px; font-weight:600; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index:10; transition: transform 0.2s ease;`;
+                const btn = document.createElement('button'); btn.innerText = content.join(' ');
+                btn.style.cssText = `position: absolute; ${pos} padding: 18px 36px; background: ${color}; color: white; border-radius: 16px; border:1px solid rgba(255,255,255,0.2); cursor:pointer; font-size:${size}px; font-family:${chosenFont}; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index:10; transition: transform 0.2s ease;`;
                 btn.onmouseover = () => btn.style.transform = pos.includes('translate') ? 'translate(-50%, -50%) scale(1.05)' : 'scale(1.05)';
                 btn.onmouseout = () => btn.style.transform = pos.includes('translate') ? 'translate(-50%, -50%) scale(1)' : 'scale(1)';
-                btn.onclick = () => {
-                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-                    ensurePageExists(target); 
-                    const targetPage = document.getElementById(target);
-                    if(targetPage) targetPage.classList.add('active-page');
-                };
+                btn.onclick = () => { if(target) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); ensurePageExists(target); const targetPage = document.getElementById(target); if(targetPage) targetPage.classList.add('active-page'); } };
                 targetEl.appendChild(btn);
             } 
             else if (commandType === 'txt') {
                 const div = document.createElement('div');
-                div.style.cssText = `position: absolute; ${pos} color: ${color}; font-size: ${size}px; font-weight: 500; text-shadow: 0 2px 10px rgba(0,0,0,0.5); white-space: nowrap; z-index:10;`;
-                div.innerText = content.join(' ');
-                targetEl.appendChild(div);
+                div.style.cssText = `position: absolute; ${pos} color: ${color}; font-size: ${size}px; font-family:${chosenFont}; text-shadow: 0 2px 10px rgba(0,0,0,0.5); white-space: nowrap; z-index:10;`;
+                div.innerText = content.join(' '); targetEl.appendChild(div);
             }
             else if (commandType === 'img') {
-                const img = document.createElement('img');
-                img.src = imgUrl;
+                const img = document.createElement('img'); img.src = imgUrl;
                 img.style.cssText = `position: absolute; ${pos} width: ${size}px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index:5;`;
                 targetEl.appendChild(img);
             }
             else if (commandType === 'img-button') {
-                const imgBtn = document.createElement('img');
-                imgBtn.src = imgUrl;
+                const imgBtn = document.createElement('img'); imgBtn.src = imgUrl;
                 imgBtn.style.cssText = `position: absolute; ${pos} width: ${size}px; height: auto; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index:10; cursor:pointer; transition: transform 0.2s ease;`;
-                // Check if it's centered to preserve the translate properties during animation
                 imgBtn.onmouseover = () => imgBtn.style.transform = pos.includes('translate') ? 'translate(-50%, -50%) scale(1.05)' : 'scale(1.05)';
                 imgBtn.onmouseout = () => imgBtn.style.transform = pos.includes('translate') ? 'translate(-50%, -50%) scale(1)' : 'scale(1)';
-                imgBtn.onclick = () => {
-                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
-                    ensurePageExists(target); 
-                    const targetPage = document.getElementById(target);
-                    if(targetPage) targetPage.classList.add('active-page');
-                };
+                imgBtn.onclick = () => { if(target) { document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page')); ensurePageExists(target); const targetPage = document.getElementById(target); if(targetPage) targetPage.classList.add('active-page'); } };
                 targetEl.appendChild(imgBtn);
             }
         },
-        'txt': (args) => {
-            ED_ENGINE['add'](`txt ${args}`);
-        }
+        'txt': (args) => { ED_ENGINE['add'](`txt ${args}`); }
     };
 
     function startProject(goFullscreen) {
-        document.getElementById('ide-view').style.display = 'none';
-        document.getElementById('runtime-view').style.display = 'block';
-
-        const container = document.getElementById('page-container');
-        container.innerHTML = "";
-        
-        targetPageId = 'app-root';
-        ensurePageExists('app-root');
-        document.getElementById('app-root').classList.add('active-page');
-
+        document.getElementById('ide-view').style.display = 'none'; document.getElementById('runtime-view').style.display = 'block';
+        const container = document.getElementById('page-container'); container.innerHTML = ""; targetPageId = null; firstPageId = null;
         document.getElementById('editor').value.split('\n').forEach(line => {
-            const trimmed = line.trim();
-            if(!trimmed) return;
-            const spaceIdx = trimmed.indexOf(' ');
-            if(spaceIdx === -1) return;
-            
-            const cmd = trimmed.substring(0, spaceIdx);
-            const args = trimmed.substring(spaceIdx + 1);
+            const trimmed = line.trim(); if(!trimmed) return;
+            const spaceIdx = trimmed.indexOf(' '); if(spaceIdx === -1) return;
+            const cmd = trimmed.substring(0, spaceIdx); const args = trimmed.substring(spaceIdx + 1);
             if(ED_ENGINE[cmd]) ED_ENGINE[cmd](args);
         });
-
-        if(goFullscreen) {
-            document.documentElement.requestFullscreen().catch(err => console.log(err));
-        }
+        if (firstPageId) { const startScreen = document.getElementById(firstPageId); if (startScreen) startScreen.classList.add('active-page'); }
+        if(goFullscreen) { document.documentElement.requestFullscreen().catch(err => console.log(err)); }
     }
 
     function exitProject() {
         if (document.fullscreenElement) document.exitFullscreen();
-        document.getElementById('runtime-view').style.display = 'none';
-        document.getElementById('ide-view').style.display = 'block';
+        document.getElementById('runtime-view').style.display = 'none'; document.getElementById('ide-view').style.display = 'flex';
     }
 
     function saveFile() {
-        const text = document.getElementById('editor').value;
-        const blob = new Blob([text], {type: "text/plain"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "project.ed";
-        a.click();
+        const text = document.getElementById('editor').value; const blob = new Blob([text], {type: "text/plain"});
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "project.ed"; a.click();
     }
 </script>
 </body>
